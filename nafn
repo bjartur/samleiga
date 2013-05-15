@@ -1,0 +1,37 @@
+#!/usr/bin/ruby
+#coding: utf-8
+require 'cgi'
+
+require 'cgi'
+cgi = CGI.new
+
+status = 200
+cookie = ""
+msg = ""
+user = ""
+
+if cgi.params.length == 0
+	if cgi.cookies.member?('s')
+		cookie = cgi.cookies['s'].value[0]
+		cookie.delete("..") #To prevent ../notandi/einhver/passwd
+		cookie.delete("/")
+	end
+	if cookie != "" and File.isfile?('/var/lib/samleiga/cookie/' + cookie)
+		user = File.read('/var/lib/samleiga/cookie/' + cookie)
+	end
+#	status = 400
+	if user = ""
+		msg = '<form><label>Nafn: <input name="name"></label></form>'
+	end
+else
+	user = cgi.params[cgi.keys[0]][0]
+	#Sanitize $user
+#	fd = File.open('/var/lib/samleiga/notandi/' + user + '/name')
+#	fd.write(cgi.params[cgi.keys[0]][0])
+end
+if msg = ""
+	msg = "<p>Sæl/l", user
+end
+puts cgi.header("status" => status, "charset" => "UTF-8")
+puts "<!DOCTYPE html><title>Welcome</title>"
+puts msg
